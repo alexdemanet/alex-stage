@@ -54,6 +54,7 @@ def on_disconnect(client, userdata, rc, properties=None):
 
 # --- Configuration du client MQTT
 cclient = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=SERVER_ID)
+cclient.username_pw_set(username="serveur", password="serveur")  # pour limiter l’accès au topic
 
 cclient.on_connect = on_connect
 cclient.on_message = on_message

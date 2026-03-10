@@ -26,4 +26,6 @@ services:
         - ./mosquitto/data:/mosquitto/data
         - ./mosquitto/log:/mosquitto/log
         - ./certs:/mosquitto/certs
+        - ./mosquitto/config/passwords.txt:/mosquitto/config/passwords.txt
+        - ./mosquitto/config/acl.txt:/mosquitto/config/acl.txt
       restart: unless-stopped

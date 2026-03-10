@@ -6,7 +6,7 @@ import paho.mqtt.client as mqtt
 
 BROKER = "127.0.0.1"         # Adresse IP du broker
 PORT = 8883                     # Port MQTT sécurisé
-CLIENT_ID = "raspi01"           # Modifier pour chaque Raspberry
+CLIENT_ID = "user1"           # Modifier pour chaque Raspberry
 
 TOPIC_COMSO = f"ems/{CLIENT_ID}/comso"
 TOPIC_PROD = f"ems/{CLIENT_ID}/prod"
@@ -50,6 +50,7 @@ def on_disconnect(client, userdata, rc):
 
 # --- Configuration client MQTT
 client = mqtt.Client(client_id=CLIENT_ID, clean_session=True)
+client.username_pw_set(username="user1", password="user1")  # pour limiter l’accès au topic
 
 client.on_connect = on_connect
 client.on_disconnect = on_disconnect
