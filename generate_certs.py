@@ -4,6 +4,10 @@
 Usage:
     python generate_certs.py [--force]
 
+# The generated server certificate by default will include both the DNS name
+# "localhost" and the IP address 127.0.0.1 in its SubjectAltName.  This makes
+# it valid when clients connect using either host name or loopback IP.
+
 Generates the following files under ./certs (directory created if missing):
 
     ca.key      CA private key (PEM)
@@ -53,10 +57,10 @@ def create_ca(force: bool = False):
     ca_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
 
     subject = x509.Name([
-        x509.NameAttribute(NameOID.COUNTRY_NAME, "US"),
-        x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, "CA"),
-        x509.NameAttribute(NameOID.LOCALITY_NAME, "Localhost"),
-        x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Example CA"),
+        x509.NameAttribute(NameOID.COUNTRY_NAME, "BE"),
+        x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, "CLiegeA"),
+        x509.NameAttribute(NameOID.LOCALITY_NAME, "Liege"),
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, "hepl"),
         x509.NameAttribute(NameOID.COMMON_NAME, "Example Local CA"),
     ])
 
@@ -107,11 +111,17 @@ def create_server_cert(ca_key, ca_cert, force: bool = False):
         x509.NameAttribute(NameOID.COMMON_NAME, "localhost"),
     ])
 
+    # include both DNS and IP SANs so cert works for localhost and 127.0.0.1
+    from ipaddress import IPv4Address
+
     csr = (
         x509.CertificateSigningRequestBuilder()
         .subject_name(subject)
         .add_extension(
-            x509.SubjectAlternativeName([x509.DNSName("localhost")]),
+            x509.SubjectAlternativeName([
+                x509.DNSName("localhost"),
+                x509.IPAddress(IPv4Address("127.0.0.1")),
+            ]),
             critical=False,
         )
         .sign(srv_key, hashes.SHA256())
@@ -131,7 +141,11 @@ def create_server_cert(ca_key, ca_cert, force: bool = False):
             critical=True,
         )
         .add_extension(
-            x509.SubjectAlternativeName([x509.DNSName("localhost")]),
+            # include the same SANs as in the CSR (DNS + IP address)
+            x509.SubjectAlternativeName([
+                x509.DNSName("localhost"),
+                x509.IPAddress(IPv4Address("127.0.0.1")),
+            ]),
             critical=False,
         )
         .sign(ca_key, hashes.SHA256())

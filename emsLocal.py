@@ -4,7 +4,7 @@ import json
 import socket
 import paho.mqtt.client as mqtt
 
-BROKER = "192.168.2.20"         # Adresse IP du broker
+BROKER = "127.0.0.1"         # Adresse IP du broker
 PORT = 8883                     # Port MQTT sécurisé
 CLIENT_ID = "raspi01"           # Modifier pour chaque Raspberry
 
@@ -12,8 +12,8 @@ TOPIC_COMSO = f"ems/{CLIENT_ID}/comso"
 TOPIC_PROD = f"ems/{CLIENT_ID}/prod"
 
 CA_CERT = "./certs/ca.crt"
-CLIENT_CERT = "./certs/client.crt"
-CLIENT_KEY = "./certs/client.key"
+CLIENT_CERT = "./certs/ca.crt"
+CLIENT_KEY = "./certs/ca.key"
 
 
 # --- Données simulées (à remplacer par tes capteurs)
