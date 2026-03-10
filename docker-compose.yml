@@ -1,0 +1,29 @@
+# Use postgres/example user/password credentials
+
+services:
+
+  db:
+    image: postgres:18-alpine
+    restart: always
+    volumes:
+      - ./postgres_conf:/etc/postgresql/
+    environment:
+      POSTGRES_USERNAME: example
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+
+
+  mosquitto:
+      image: eclipse-mosquitto
+      container_name: mosquitto
+      ports:
+        - "8883:8883"
+        - "1883:1883"
+      volumes:
+        - ./mosquitto/config:/mosquitto/config
+        - ./mosquitto/data:/mosquitto/data
+        - ./mosquitto/log:/mosquitto/log
+        - ./certs:/mosquitto/certs
+      restart: unless-stopped

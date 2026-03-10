@@ -11,9 +11,9 @@ CLIENT_ID = "raspi01"           # Modifier pour chaque Raspberry
 TOPIC_COMSO = f"ems/{CLIENT_ID}/comso"
 TOPIC_PROD = f"ems/{CLIENT_ID}/prod"
 
-CA_CERT = "/home/pi/certs/ca.crt"
-CLIENT_CERT = "/home/pi/certs/client.crt"
-CLIENT_KEY = "/home/pi/certs/client.key"
+CA_CERT = "./certs/ca.crt"
+CLIENT_CERT = "./certs/client.crt"
+CLIENT_KEY = "./certs/client.key"
 
 
 # --- Données simulées (à remplacer par tes capteurs)

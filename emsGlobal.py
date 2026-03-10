@@ -3,18 +3,19 @@ import time
 import json
 import paho.mqtt.client as mqtt
 
-BROKER = "192.168.2.20"          # Adresse du broker Mosquitto
+BROKER = "127.0.0.1"          # Adresse du broker Mosquitto (ici en local)
 PORT = 8883                      # Port TLS
 TOPIC = "ems/#"    
-CLIENT_ID = "EMS_GLOBAL_SERVER"
+SERVER_ID = "EMS_GLOBAL_SERVER"
 
-CA_CERT = "/certs/ca.crt"
-CLIENT_CERT = "/certs/server.crt"
-CLIENT_KEY = "/certs/server.key"
+CA_CERT = "./certs/ca.crt"
+SERVER_CERT = "./certs/server.crt"
+SERVER_KEY = "./certs/server.key"
 
 
 # --- Callback : connexion au broker
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc, properties=None):
+    # paho mqtt 1.6+ passes an additional 'properties' argument when using MQTT v5
     if rc == 0:
         print("🟢 Connecté au broker MQTT")
         client.subscribe(TOPIC)
@@ -41,7 +42,8 @@ def on_message(client, userdata, msg):
 
 
 # --- Callback : déconnexion
-def on_disconnect(client, userdata, rc):
+def on_disconnect(client, userdata, rc, properties=None):
+    # MQTT v5 may supply properties parameter as well
     print("🔔 Déconnecté du broker, tentative de reconnexion...")
     time.sleep(2)
     try:
@@ -51,28 +53,29 @@ def on_disconnect(client, userdata, rc):
 
 
 # --- Configuration du client MQTT
-client = mqtt.Client(client_id=CLIENT_ID)
+cclient = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=SERVER_ID)
 
-client.on_connect = on_connect
-client.on_message = on_message
-client.on_disconnect = on_disconnect
+cclient.on_connect = on_connect
+cclient.on_message = on_message
+cclient.on_disconnect = on_disconnect
 
 # --- Configuration TLS
-client.tls_set(
+cclient.tls_set(
     ca_certs=CA_CERT,
-    certfile=CLIENT_CERT,
-    keyfile=CLIENT_KEY,
+    certfile=SERVER_CERT,
+    keyfile=SERVER_KEY,
+    keyfile_password="0idee",
     tls_version=ssl.PROTOCOL_TLSv1_2
 )
 
-client.tls_insecure_set(False)
+cclient.tls_insecure_set(False)
 
 print("🔐 Paramètres TLS chargés")
 
 # --- Connexion au broker
 print("⏳ Connexion au broker...")
-client.connect(BROKER, PORT)
+cclient.connect(BROKER, PORT)
 
 # --- Boucle principale
 print("🚀 Serveur EMS Global actif. En attente de données...")
-client.loop_forever()
+cclient.loop_forever()
