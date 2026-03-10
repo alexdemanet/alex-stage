@@ -1,1 +1,5 @@
-allo
+# smartuser : read everywhere
+user server
+topic read ems/#
+
+pattern write ems/%c/+
